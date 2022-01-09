@@ -1,5 +1,6 @@
 package com.jonathan.signinsignup.common;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class RestApiExceptionHandler {
 
+    @Value("${spring.profiles.active}")
+    String activeSpringProfile;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
@@ -41,11 +44,11 @@ public class RestApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleException(Exception e) {
-        boolean isProd = "prod".equals("develop");
+        boolean isProd = "prod".equals(activeSpringProfile);
         ApiError apiError = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong. Please try again later.",
-                isProd ? e.toString() : null
+                isProd ? null : e.toString()
         );
 
         return buildResponseEntityApiError(apiError);
