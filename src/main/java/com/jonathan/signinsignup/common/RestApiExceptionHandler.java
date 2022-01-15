@@ -7,45 +7,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
+
+@RestControllerAdvice
 public class RestApiExceptionHandler {
 
     @Value("${spring.profiles.active}")
-    String activeSpringProfile;
+    private String activeSpringProfile;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        List<ApiError.FieldError> fieldErrors = exception.getFieldErrors().stream().map(i -> {
-            return new ApiError.FieldError(i.getField(), i.getDefaultMessage());
-        }).collect(Collectors.toList());
-
-        return buildResponseEntityApiError(new ApiError(HttpStatus.BAD_REQUEST, "Request payload validation failed", fieldErrors));
+    @ExceptionHandler(ApiErrorException.class)
+    protected ResponseEntity<Object> handleApiErrorException(
+            ApiErrorException apiError) {
+        return buildResponseEntityApiError(apiError);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        List<ApiErrorException.FieldError> fieldErrors = exception.getFieldErrors().stream().map(i -> {
+            return new ApiErrorException.FieldError(i.getField(), i.getDefaultMessage());
+        }).collect(Collectors.toList());
 
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    @ExceptionHandler(ApiError.class)
-    protected ResponseEntity<Object> handleApiError(
-            ApiError apiError) {
-        return buildResponseEntityApiError(apiError);
+        return buildResponseEntityApiError(new ApiErrorException(HttpStatus.BAD_REQUEST, "Request payload validation failed", fieldErrors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<Object> handleHttpMessageNotReadableException(Exception e) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid request");
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        ApiErrorException apiError = new ApiErrorException(HttpStatus.BAD_REQUEST, "Invalid request");
         return buildResponseEntityApiError(apiError);
     }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleException(Exception e) {
+
+    @ExceptionHandler({Exception.class, Error.class})
+    public ResponseEntity<Object> globalExceptionHandler(Exception e) {
         boolean isProd = "prod".equals(activeSpringProfile);
-        ApiError apiError = new ApiError(
+        ApiErrorException apiError = new ApiErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong. Please try again later.",
                 isProd ? null : e.toString()
@@ -54,7 +54,7 @@ public class RestApiExceptionHandler {
         return buildResponseEntityApiError(apiError);
     }
 
-    private ResponseEntity<Object> buildResponseEntityApiError(ApiError apiError) {
+    private ResponseEntity<Object> buildResponseEntityApiError(ApiErrorException apiError) {
         return new ResponseEntity<Object>(apiError.getError(), apiError.getError().getStatus());
     }
 
