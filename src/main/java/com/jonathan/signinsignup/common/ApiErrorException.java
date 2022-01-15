@@ -8,28 +8,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ApiError extends Error {
+public class ApiErrorException extends RuntimeException {
 
     private ErrorData error = new ErrorData();
 
-    private ApiError() {
+    private ApiErrorException() {
         error.timestamp = LocalDateTime.now();
     }
 
-    public ApiError(HttpStatus status, String message) {
+    public ApiErrorException(HttpStatus status, String message) {
         this();
         this.error.setStatus(status);
         this.error.setMessage(message);
     }
 
-    public ApiError(HttpStatus status, String message, String debugMessage) {
+    public ApiErrorException(HttpStatus status, String message, String debugMessage) {
         this();
         this.error.setStatus(status);
         this.error.setMessage(message);
         this.error.setDebugMessage(debugMessage);
     }
 
-    public ApiError(HttpStatus status, String message, List<FieldError> fieldErrors) {
+    public ApiErrorException(HttpStatus status, String message, List<FieldError> fieldErrors) {
         this();
         this.error.setStatus(status);
         this.error.setMessage(message);

@@ -18,10 +18,6 @@ public class SignUpRequestDto {
     private String lastName;
 
     @NotEmpty
-    @NotNull(message = "Username is required")
-    private String username;
-
-    @NotEmpty
     @NotNull(message = "Password is required")
     private String password;
 
