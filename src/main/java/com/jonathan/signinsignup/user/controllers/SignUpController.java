@@ -1,8 +1,8 @@
-package com.jonathan.signinsignup.signup.controllers;
+package com.jonathan.signinsignup.user.controllers;
 
-import com.jonathan.signinsignup.signup.models.dtos.SignUpRequestDto;
-import com.jonathan.signinsignup.signup.models.dtos.SignUpResponseDto;
-import com.jonathan.signinsignup.signup.services.SignUpService;
+import com.jonathan.signinsignup.user.models.dtos.SignUpRequestDto;
+import com.jonathan.signinsignup.user.models.dtos.SignUpResponseDto;
+import com.jonathan.signinsignup.user.services.SignUpService;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

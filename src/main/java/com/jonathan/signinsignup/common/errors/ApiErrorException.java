@@ -1,4 +1,4 @@
-package com.jonathan.signinsignup.common;
+package com.jonathan.signinsignup.common.errors;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -37,7 +37,7 @@ public class ApiErrorException extends RuntimeException {
     }
 
     @Data
-    static class ErrorData {
+    public static class ErrorData {
         private HttpStatus status;
         private String message;
 
@@ -50,7 +50,7 @@ public class ApiErrorException extends RuntimeException {
     }
 
     @Data
-    static class FieldError {
+    public static class FieldError {
         private String field;
         private String message;
 

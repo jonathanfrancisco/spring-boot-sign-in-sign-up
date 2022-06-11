@@ -1,13 +1,10 @@
-package com.jonathan.signinsignup.signup.models.entities;
-
+package com.jonathan.signinsignup.user.models.entities;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Entity
 public class ClientUser {
@@ -16,6 +13,11 @@ public class ClientUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     private Long id;
+
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    private String username;
 
     @Getter
     @Setter
@@ -37,9 +39,18 @@ public class ClientUser {
     @Column(nullable = false)
     private String email;
 
+    @Getter
+    @Setter
+    @Column(columnDefinition = "boolean default true")
+    private boolean active;
+
     @CreationTimestamp
+    @Getter
+    @Setter
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Getter
+    @Setter
     private Timestamp updatedAt;
 }

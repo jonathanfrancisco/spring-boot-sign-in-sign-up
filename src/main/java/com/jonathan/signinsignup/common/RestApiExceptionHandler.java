@@ -1,8 +1,7 @@
 package com.jonathan.signinsignup.common;
 
+import com.jonathan.signinsignup.common.errors.ApiErrorException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class RestApiExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        ApiErrorException apiError = new ApiErrorException(HttpStatus.BAD_REQUEST, "Invalid request");
+        ApiErrorException apiError = new ApiErrorException(HttpStatus.BAD_REQUEST, "Malformed or missing request payload");
         return buildResponseEntityApiError(apiError);
     }
 
@@ -45,6 +46,16 @@ public class RestApiExceptionHandler {
     @ExceptionHandler({Exception.class, Error.class})
     public ResponseEntity<Object> globalExceptionHandler(Exception e) {
         boolean isProd = "prod".equals(activeSpringProfile);
+
+        StringWriter writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter( writer );
+        e.printStackTrace( printWriter );
+        printWriter.flush();
+
+        String stackTrace = writer.toString();
+        System.out.println(stackTrace);
+
+
         ApiErrorException apiError = new ApiErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong. Please try again later.",

@@ -1,4 +1,4 @@
-package com.jonathan.signinsignup.signup.models.dtos;
+package com.jonathan.signinsignup.user.models.dtos;
 
 import lombok.Builder;
 import lombok.Data;

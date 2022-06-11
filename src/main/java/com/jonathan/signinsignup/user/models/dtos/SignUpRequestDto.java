@@ -1,4 +1,4 @@
-package com.jonathan.signinsignup.signup.models.dtos;
+package com.jonathan.signinsignup.user.models.dtos;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -8,6 +8,10 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class SignUpRequestDto {
+
+    @NotEmpty
+    @NotNull(message = "Username is required")
+    private String username;
 
     @NotEmpty
     @NotNull(message = "First name is required")
